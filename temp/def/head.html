@@ -1,0 +1,494 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>{$mtitle}</title>
+    <meta charset="utf-8"/>
+    <meta name="keywords" content="midi,音频,电子音乐"/>
+    <meta name="description" content="midi共享平台"/>
+    <script>
+      window.onerror=function(a,b,c,d,e){
+        $("#debug").text("debug:"+a+" "+b+" "+c+" "+d+" "+e);
+        //alert("debug:"+a+" "+b+" "+c+" "+d+" "+e);
+        return true;
+      }
+    </script>
+    {if $addrFault}
+    <script>
+      alert("ip地址出现异常\n发现异地登录：{$addrFault}");
+      function getAddrPosition(arg){
+        try{
+          alert("位置:"+arg.result.area+" "+arg.result.location);
+        }catch(e){}
+      }
+    </script>
+    <script src="http://apis.juhe.cn/ip/ip2addr?ip={$addrFault}&dtype=jsonp&key=54d7b1689c44658a9b83a09250024450&callback=getAddrPosition"></script>
+    {/if}
+    <script src="/js/jquery.js"></script>
+    <script src="/js/index.js"></script>
+    <script>
+    {if $MyUid==0}
+      window.myuid=0;
+      window.islogin=false;
+    {else}
+      window.myuid={$MyUid};
+      window.islogin=true;
+    {/if}
+    {if $UserInfo.admin==1}
+      window.isadmin=1;
+    {/if}
+    </script>
+{literal}
+    <style>
+      .passages{
+        background:#5CACEE;
+        border:2px solid rgba(64,128,255,1);
+        border-radius:5% 5% 5% 5%;
+        width:100%;
+      }
+      .passages:hover{
+        background:#5CACFF;
+        border:2px solid rgba(128,64,255,1);
+        border-radius:5% 5% 5% 5%;
+        width:100%;
+      }
+      .childrennodes:hover {
+        background:rgba(199,255,199,1);
+      }
+      .button:disabled{
+        background:rgba(128,255,128,0.2);
+        text-align:center;
+        padding:15px 32px;
+        color:#fff;
+        display:inline-block;
+        font-size:100%;
+        border-radius:20% 20% 20% 20%;
+      }
+      .button {
+        background:rgba(16,255,128,0.7);
+        text-align:center;
+        padding:15px 32px;
+        color:#fff;
+        display:inline-block;
+        font-size:100%;
+        border-radius:20% 20% 20% 20%;
+      }
+      .inpline {
+        display:inline-block;
+        width:70%;
+        border-radius:3% 3% 3% 3%;
+      }
+      .vcode {
+        border:1px solid #09f;
+      }
+      .errinfo {
+        color:#f00;
+        font-size:200%;
+        text-align:center;
+      }
+      .topline {
+        position:fixed;
+        top:0%;
+        width:100%;
+        height:5%;
+        z-index:888;
+        background:rgba(16,128,255,0.7);
+        text-align:right;
+      }
+      .topline a{
+        color: #77FFEE;
+        /*background:#77FFEE;
+        border:1px solid rgba(16,255,255,0.5);
+        border-radius:20% 20% 20% 20%;*/
+      }
+      .topline a:hover {
+        text-decoration: underline;
+        color: #FFFFFF;
+        /*background:#AFBC8F;
+        border:1px solid rgba(16,255,255,1);
+        border-radius:20% 20% 20% 20%;*/
+      }
+      .p_box {
+        top:2.5%;
+        left:2.5%;
+        /*text-align:center;*/
+        display:none;
+        height:90%;
+        width:95%;
+        position:fixed;
+        background:rgba(0,255,255,0.5);
+        z-index:999;
+        border:1px solid #99f;
+        border-radius:5% 5% 5% 5%;
+      }
+      .p_box div{
+        border-radius:5% 5% 5% 5%;
+      }
+      .linkbutton a{
+        color: rgba(64,255,128,1);
+        background:rgba(255,248,64,0);
+        border:1px solid rgba(16,255,255,1);
+        border-radius:20% 20% 20% 20%;
+      }
+      .linkbutton a:hover {
+        text-decoration: underline;
+        color: #ff6a9f;
+        background:rgba(16,255,128,1);
+        border:1px solid rgba(16,255,255,1);
+        border-radius:20% 20% 20% 20%;
+      }
+      textarea {
+        width:80%;
+        height:60%;
+        border-radius:3% 3% 3% 3%;
+      }
+      body {
+        overflow-y:scroll;
+        background:#00CED1;
+        color:#111;
+        word-wrap:break-word;
+      }
+      a {
+        color: #7f6a9f;
+        text-decoration:none; 
+      }
+      a:hover {
+        text-decoration: underline;
+        color: #ff6a9f;
+      }
+      li{
+        list-style-type:none;
+      }
+      #savebox tr:hover{
+        background:rgba(199,255,199,1);
+      }
+      #savebox{
+        width:100%;
+      }
+      #savebox a{
+        color: #e74;
+      }
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdown-content {
+        display: none;
+        position: fixed;
+        background:rgba(64,255,255,0.7);
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1000;
+        width:20%;
+        left: 78%;
+        text-align:left;
+      }
+      .dropdown-content li{
+        background:rgba(64,255,255,0.7);
+        list-style-type:none;
+      }
+      .dropdown-content li:hover{
+        background:rgba(255,64,255,0.7);
+      }
+      .dropdown-content a{
+        color: rgba(64,128,128,1);
+        background:rgba(9,8,0,0);
+        border:none;
+        border-radius:none;
+        width:100%;
+        display: block;
+      }
+      .dropdown-content a:hover {
+        text-decoration: underline;
+        background:rgba(9,8,0,0);
+        color:rgba(128,128,64,1);
+        border:none;
+        border-radius:none;
+      }
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .rightline:active {
+        background:#00CED1;
+        border-style:inset;
+        border-radius:3% 3% 3% 3%;
+        width:9%;
+        height:3%;
+      }
+      .rightline {
+        background:#22CED1;
+        border-style:outset;
+        border-radius:3% 3% 3% 3%;
+        width:9%;
+        height:3%;
+      }
+      .rightline-box {
+        /*position:fixed;*/
+        top:10%;
+        left:70%;
+        /*width:50%;*/
+        z-index:887;
+        background:rgba(0,0,0,0);
+        text-align:right;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="reg" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#reg')">
+        <img src="img/close.svg"/>
+      </a>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <input type='text' id='r_uname'   placeholder="用户"   class="inpline"><br>
+        <input type='password' id='r_pwd' placeholder="密码"   class="inpline"><br>
+        <input type='text' id='r_mail'    placeholder="邮箱"   class="inpline"><br>
+        <input type='text' id='r_vcode'   placeholder="验证码" class="inpline"><br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="reg_vc"/><br>
+        <input class="button" type="button" onclick="reg_c()" value="提交"/><br>
+        已经注册？<a href="javascript:regact()">激活帐号</a>
+      </div>
+    </div>
+    <div id="regact" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#regact')">
+        <img src="img/close.svg"/>
+      </a>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <input type='text' id='actcode' placeholder="邀请码" class="inpline"><br>
+        <input class="button" type="button" onclick="regact_c()" value="提交"/>
+      </div>
+    </div>
+    <div id="message" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#message')">
+        <img src="img/close.svg"/>
+      </a>
+      <div id="msgbox" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        
+      </div>
+    </div>
+    <div id="sendpass" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#sendpass')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div id="spb" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <input type='text' id='ptitle' placeholder="标题" class="inpline" maxlength="512"/><br>
+        <a id="ptext_s" href="javascript:sendpassage_des()">正文</a>
+        <a id="pscript_s" href="javascript:sendpassage_scr()">脚本</a><br>
+        <textarea id='ptext' rows="16" placeholder="&nbsp;正文"></textarea>
+        
+        <textarea id='pscript' rows="16" style="display: none;" placeholder="&nbsp;脚本(遵循lua语法，api见帮助。如果不会写，可留空)"></textarea>
+        <br>
+          <input type="checkbox" id="plock">禁止fork（可通过点击“解除锁定”来解除）
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="spb_vc"/><br>
+        <input type='text' id='pvcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="sendpassage()" id="pbutton" disabled="false" value="发送"/>
+        <span id="pstatus"></span>
+      </div>
+    </div>
+    <div id="sendcomm" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#sendcomm')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <h3 style="text-align:center;color:#79f;">发表评论</h3>
+        <textarea id='cmtext' rows="15"></textarea>
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="sendcomm_vc"/><br>
+        <input type='text' id='cvcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="sendcomm_c()" value="发送"/>
+      </div>
+    </div>
+    
+    <div id="sendrep" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#sendrep')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <h3 style="text-align:center;color:#79f;">举报</h3>
+        <textarea id='rptext' rows="15"></textarea>
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="sendrep_vc"/><br>
+        <input type='text' id='rpcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="sendrep_c()" value="发送"/>
+      </div>
+    </div>
+    <div id="sendCoin" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#sendCoin')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        数量：<br>
+        <input type='number' value='0' maxlength='11' id="conum"/><br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="sendCoin_vc"/><br>
+        <input type='text' id='covcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="sendCoin_c()" value="发送"/>
+      </div>
+    </div>
+    
+    <div id="login" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#login')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+        <div id="login_b" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+          <input type="text" id="usc_login_uname"   placeholder="用户名" class="inpline"><br>
+          <input type="password" id="usc_login_pwd" placeholder="密码" class="inpline"><br>
+          <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="login_vc"/><br>
+          <input type='text' id='lvcode' placeholder="验证码" class="inpline"/><br>
+          <input class="button" type="button" onclick="login()" value="登录"/>
+        </div>
+    </div>
+    
+    <div id="save" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#save')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);height:95%;">
+        <div style="overflow-y:scroll;height:90%;width: 100%;">
+          <br>
+          <table id="savebox">
+          </table>
+        </div>
+        <a href="javascript:getAllSave()">加载更多</a>
+      </div>
+    </div>
+    
+    <div id="useractive" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#useractive')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);height:95%;">
+        <div style="overflow-y:scroll;height:90%;width: 100%;" id="activebox">
+        </div>
+      </div>
+    </div>
+
+    <div id="search_result" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#search_result')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);height:95%;">
+        <div style="overflow-y:scroll;height:90%;width: 100%;" id="search_result_box">
+        </div>
+      </div>
+    </div>
+
+    <div id="usermsgs" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#usermsgs')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);height:95%;">
+        <div style="overflow-y:scroll;height:90%;width: 100%;" id="usermsgsbox">
+        </div>
+      </div>
+    </div>
+    <div id="sendusermsg" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#sendusermsg')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        目标id：<input type="text" id="sendusermsguid" placeholder="用户id"/><br>
+        <textarea id='sendusermsgtext' rows="10"></textarea>
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="sendusermsg_vc"/><br>
+        <input type='text' id='sumcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="sendusermsg_c()" value="发送"/>
+      </div>
+    </div>
+
+    <div id="uactive_box" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#uactive_box')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div style="top:10%;width:100%;background:rgba(0,255,255,0.7);" id="useractives">
+        
+      </div>
+    </div>
+
+    {/literal}
+    <div class="topline">
+      {if $MyUid!=0}
+      <script type="text/javascript" >
+          var sendTime={$UserInfo.sendTime};
+          function checkSendTime(){
+            if(sendTime==-1){
+              $("#sendTimeBox").html("<span style='color:#f77'>帐号被封禁</span>");
+              document.getElementById("pbutton").disabled=true;
+              $("#pstatus").text("帐号被封禁，无法发帖");
+              return;
+            }
+            var tm=parseInt((new Date().getTime())/1000);
+            if(sendTime>tm){
+              $("#sendTimeBox").html("<span style='color:#f70'>帐号正在冷却:"+String(sendTime-tm)+"</span>");
+              document.getElementById("pbutton").disabled=true;
+              $("#pstatus").text("帐号正在冷却，无法发帖");
+              setTimeout(checkSendTime,100);
+            }else{
+              $("#sendTimeBox").text("帐号状态正常");
+              $("#pstatus").text("");
+              document.getElementById("pbutton").disabled=false;
+            }
+          }
+          function canSend(){
+            if(sendTime==-1){
+              return true;
+            }
+            var tm=parseInt((new Date().getTime())/1000);
+            if(sendTime>tm){
+              return false;
+            }else {
+              return true;
+            }
+          }
+          ready(function(){
+            checkSendTime();
+          });
+      </script>
+      <span id="sendTimeBox" style="float:left;color:#9a9;"></span>
+      {/if}
+      <span style="font-size:200%;"><a href="passage.php?">回到主页</a></span>&nbsp;&nbsp;
+      <span style="font-size:200%;"><a href="help.html">帮助</a></span>&nbsp;&nbsp;
+      <div class="dropdown">
+        <span style="font-size:200%;"><a href="javascript:void(0);">更多...</a></span>
+        <div class="dropdown-content">
+        {if $MyUid!=0}
+          欢迎你，<a href="user.php?uid={$MyUid}" style="display: inline;" >{$UserInfo.uname}</a>
+          硬币：{$UserInfo.coin}<br>
+            <li><a href="user.php?mode=setting">个人中心</a></li>
+            <li><a href="javascript:getMsg()">消息{if $HaveMsg}(*){/if}</a></li>
+            <li><a href="javascript:getUserActive()">动态</a></li>
+            <li><a href="javascript:doactive('logout',1,{$Page.id})">登出</a></li>
+        {else}
+          <li><a href="javascript:openbox('#login')">登录</a></li>
+          <li><a href="javascript:reg()">注册</a></li>
+        {/if}
+        </div>
+      </div>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+    <br>
+    <br>
+    
+      <a href="javascript:searchNoteBox()"
+        style="right:3%;z-index:3;position:absolute;top:7%;">搜索</a>
+      <input 
+        type="search" 
+        id="search_box" 
+        placeholder="旋律搜索"
+        style="background:#9AFF9A;border-radius:20% 20% 20% 20%;z-index:2;position:absolute;right:2%;top:7%;"
+      />
+      

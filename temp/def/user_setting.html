@@ -1,0 +1,32 @@
+{include file="head.html" mtitle="setting"}
+{literal}
+    <div id="changepwd" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#changepwd')">
+        <img src="img/close.svg"/>
+      </a>
+      <div style="top:10%;width:100%;position:absolute;background:rgba(0,255,255,0.7);">
+        <input type='password' id='opwd' placeholder="旧密码"><br>
+        <input type='password' id='npwd' placeholder="新密码"><br>
+        <input type='text' id='cpwv'     placeholder="验证码"><br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="changepwd_vc"/><br>
+        <input class="button" type="button" onclick="changepwd_c()" value="提交"/>
+      </div>
+    </div>
+    
+    <div id="setDes" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#setDes')">
+        <img src="img/close.svg"/>
+      </a>
+      <div style="top:10%;width:100%;position:absolute;background:rgba(0,255,255,0.7);">
+        <textarea id="uddescpt" rows="20"></textarea><br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="setDes_vc"/><br>
+        <input type='text' id='udvcode'     placeholder="验证码"><br>
+        <input class="button" type="button" onclick="setDes_c()" value="提交"/>
+      </div>
+    </div>
+{/literal}
+    <br>
+    <a href="javascript:changepwd()">修改密码</a><br>
+    <a href="javascript:setDes()">修改签名</a><br>
+
+{include file="foot.html"}

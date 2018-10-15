@@ -1,0 +1,12 @@
+{include file="head.html" mtitle="mywatch"}
+<div class='mywatch_b'>
+  {foreach $Child as $P}
+    <div class="passages_b">
+      <a href="/fork{$P.pid}">{$P.title}</a>
+    </div>
+  {/foreach}
+</div>
+{if $ChildHaveNextPage==1}
+  <a href="?mode=watch&max={$ChildNextPage}">下一页</a>
+{/if}
+{include file="foot.html"}

@@ -1,0 +1,28 @@
+<hr/>
+评论：
+<span id="commun">
+</span>
+<br/>
+<a href="javascript:getcomm()">加载更多评论</a>
+<script>
+  ready(function(){
+    getcomm();
+  });
+</script>
+<br>
+{if $MyUid!=0}
+  {if $UserInfo.commun==1}
+    <a href='javascript:sendcomm()'>发表评论</a>
+  {else}
+    目前没有评论权限
+  {/if}
+  <br>
+  {if $Page.id}
+    {if $Page.id!=0}
+      <a href='javascript:sendCoin()'>投币 </a>
+      <br>
+    {/if}
+  {/if}
+{else}
+  <div style="color:#799;">登录后可发表评论和投硬币哦！</div>
+{/if}

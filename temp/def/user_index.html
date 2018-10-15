@@ -1,0 +1,37 @@
+{include file="head.html" mtitle="user"}
+<br>
+<h2>{$TheUser.uname}</h2>
+<span style="float:right;">
+{if $Loged}
+  {if $Watched}
+    <a href="javascript:doactive('watchUser',0,{$TheUser.id},true)">取消关注</a>&nbsp;
+  {else}
+    <a href="javascript:doactive('watchUser',1,{$TheUser.id},true)">关注</a>&nbsp;
+  {/if}
+{/if}
+<a href="javascript:sendusermsg({$TheUser.id})">私信</a>
+</span>
+{if $TheUser.descpt}
+  <div>{$TheUser.descpt}</div>
+{else}
+  <div>这个人很懒，什么也没写……</div>
+{/if}
+<h3><a href="passage.php?mode=watch&uid={$TheUser.id}">收藏列表</a></h3>
+<h3>发表/fork的音乐：</h3>
+{if $UserPassage}
+  <table id="allfork">
+  {foreach $UserPassage as $P}
+    <tr><td><a href="/fork{$P.id}">{$P.title}</a></td><td>{$P.score}赞</td></tr>
+  {/foreach}
+  </table>
+  <script>
+    window.maxfork={$UserPassage[count($UserPassage) - 1].id};
+    window.lookinguid={$TheUser.id};
+  </script>
+  <div id="showmore" onclick="getmorefork()" style="color:rgba(0,0,0,0.3);">
+    点击加载更多
+  </div>
+{else}
+  <div>没有文章</div>
+{/if}
+{include file="foot.html"}

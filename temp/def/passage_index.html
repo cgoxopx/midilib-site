@@ -1,0 +1,54 @@
+{include file="head.html" mtitle="MidiLib"}
+<h1>MidiLib</h1>
+<br>
+{foreach $Passages as $P}
+<div class="passages" onclick="window.open('/au{$P.id}');">
+  <h3><a href="/au{$P.id}" style="pointer-events:none;">{$P.title}</a></h3>
+  {if $UserInfo.admin==1}
+      <a href="javascript:doactive('delap',1,{$P.id})" style="float:right;">删除</a>
+  {/if}
+  <div style='display: block;'>
+    {$P.showing}
+  </div>
+  <span style="color:#09e;float:right;">
+    <span class="seconds_to_now">{time()-$P.time}</span>前 
+    <span style="color:#f9e;">
+      {$P.editor}
+    </span>
+    最新更新
+  </span>
+  <br>
+</div>
+<br>
+{/foreach}
+{if $ChildNextPage!=0 && $ChildHaveNextPage==1}
+  <a href="?max={$ChildNextPage}">下一页</a><br>
+{/if}
+{if $MyUid!=0}
+  {if $UserInfo.send==1}
+    <a href="javascript:openbox('#sendpass')">我要发布</a>
+  {else}
+    目前没有发帖权限<br>
+    多逛逛，说不定就有了呢？
+  {/if}
+  <script type="text/javascript" >
+    var tm=(new Date().getTime())/1000;
+    if(localStorage.getItem("activeUpdateTime")==null || (tm-parseInt(localStorage.getItem("activeUpdateTime")))>12*60*60){
+      ready(function(){
+        getActive(true);
+        localStorage.setItem("activeUpdateTime",tm);
+      });
+    }
+  </script>
+{/if}
+<script>
+    ready(function(){
+      var list=document.getElementsByClassName("seconds_to_now")
+        for(var i=0;i<list.length;i++){
+           list[i].innerHTML=timeFormat(list[i].innerHTML);
+        }
+    });
+</script>
+<br>
+{include file="commun.html"}
+{include file="foot.html"}

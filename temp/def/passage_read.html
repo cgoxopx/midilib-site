@@ -1,0 +1,226 @@
+{include file="head.html" mtitle=$Page.title}
+<script>
+{if $Page.id}
+  window.thisnodeid={$Page.id};
+{else}
+  window.thisnodeid=0;
+{/if}
+{if $ChildNextPage}
+  window.thisnodepage={$ChildNextPage};
+{else}
+  window.thisnodepage=0;
+{/if}
+</script>
+    <div id="editpass" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#editpass')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div id="epb" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <input type='text' id='eptitle' placeholder="标题" value="{$Page.title}" class="inpline" maxlength="512"/><br>
+        <textarea id='eptext' rows="18" placeholder="正文"></textarea>
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="epb_vc"/><br>
+        <input type='text' id='epvcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="editpassage_c()" value="保存"/>
+      </div>
+    </div>
+    <div id="editscript" class="p_box">
+      <a style="float:right;" href="javascript:closebox('#editscript')">
+        <img src="img/close.svg"/>
+      </a>
+      <br>
+      <div id="esb" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+        <textarea id='escript' rows="14" placeholder="脚本">{$PScriptCode}</textarea>
+        <br>
+        {if $IsMyPsg==1}
+        注意，只有自己的帖子才能保存哦。别人的会保存失败。
+        <br>
+        <img class='vcode' onclick="loadvcode(this)" src="img/loadvcode.svg" id="esb_vc"/><br>
+        <input type='text' id='esvcode' placeholder="验证码"/>
+        <br>
+        <input class="button" type="button" onclick="editscript_c()" value="保存"/>
+        {/if}
+        <p style="font-size:%3;color:#999;">powered by lua5.1 AND Emscripten</p>
+      </div>
+    </div>
+<h1>{$Page.title}</h1><br>
+{if $Page.pid!=0}
+fork自<a href="/fork{$Page.pid}">这里</a>
+<!-- <a href="/au{$Page.rid}">根节点</a> -->
+{/if}
+{if $MyUid!=0}
+  <div class="rightline-box" style="font-size:160%;">
+
+  <span class="rightline">
+  {if $PStatus.watch==1}
+    <a href="javascript:doactive('watch',0,{$Page.id},true)"><img src="img/unwatch.svg" height="2%" width="2%"/>取消关注</a>
+  {else}
+    <a href="javascript:doactive('watch',1,{$Page.id},true)"><img src="img/watch.svg" height="2%" width="2%"/>关注</a>
+  {/if}
+  </span>&nbsp;&nbsp;&nbsp;
+
+  <span class="rightline">
+  {if $PStatus.score==1}
+    <a href="javascript:doactive('score',0,{$Page.id},true)"><img src="img/unstar.svg" height="2%" width="2%"/>取消点赞 {$Page.score}</a>
+  {else}
+    <a href="javascript:doactive('score',1,{$Page.id},true)"><img src="img/star.svg" height="2%" width="2%"/>点赞 {$Page.score}</a>
+  {/if}
+  </span>&nbsp;&nbsp;&nbsp;
+
+  <span class="rightline">
+    <a href="javascript:fork()"><img src="img/fork.svg" height="2%" width="2%"/>fork</a>
+    <a href='javascript:openbox("#forks")'>{$Page.child}</a>
+  </span>&nbsp;&nbsp;&nbsp;
+
+  {if $MyUid==$Page.uid}
+    <span class="rightline">
+    {if $Page.lock==1}
+      <a href="javascript:doactive('lock',0,{$Page.id},true)"><img src="img/unlock.svg" height="2%" width="2%"/>解锁</a>
+    {else}
+      <a href="javascript:doactive('lock',1,{$Page.id},true)"><img src="img/lock.svg" height="2%" width="2%"/>锁定</a>
+    {/if}
+    </span>&nbsp;&nbsp;&nbsp;
+    <span class="rightline">
+      {if $Page.hide==1}
+        <a href="javascript:doactive('hide',0,{$Page.id})"><img src="img/show.svg" height="2%" width="2%"/>显示</a>
+      {else}
+        <a href="javascript:doactive('hide',1,{$Page.id})"><img src="img/hide.svg" height="2%" width="2%"/>隐藏</a>
+      {/if}
+    </span>&nbsp;&nbsp;&nbsp;
+  {else}
+    {if $UserInfo.admin==1}
+      {if $Page.hide==1}
+        <a href="javascript:doactive('hide',0,{$Page.id})"><img src="img/show.svg" height="2%" width="2%"/>显示</a>
+      {else}
+        <a href="javascript:doactive('hide',1,{$Page.id})"><img src="img/hide.svg" height="2%" width="2%"/>隐藏</a>
+      {/if}
+    {/if}
+  {/if}
+  {if $MyUid==$Page.uid}
+    <span class="rightline">
+    <a href="javascript:doactive('delete',1,{$Page.id})"><img src="img/cancle.svg" height="2%" width="2%"/>删除</a>
+    </span>&nbsp;&nbsp;&nbsp;
+  {/if}
+    <span class="rightline">
+    <a href="javascript:sendrep('举报文章：id={$Page.id}\n理由：')"><img src="img/report.svg" height="2%" width="2%"/>举报</a>
+    </span>&nbsp;&nbsp;&nbsp;
+    <br>
+  </div>
+{else}
+  <div class="rightline-box" style="left:65%;font-size:160%;">
+    <span class="rightline">
+      <a href="javascript:void(0)"><img src="img/star.svg" height="2%" width="2%"/></a>点赞 {$Page.score}
+    </span>&nbsp;&nbsp;&nbsp;
+    <span class="rightline">
+      <a href="javascript:void(0)"><img src="img/fork.svg" height=2%" width="2%"/></a>fork
+      <a href='javascript:openbox("#forks")'>{$Page.child}</a>
+    </span>&nbsp;&nbsp;&nbsp;
+    <span class="rightline">
+    <a href="javascript:sendrep('举报文章：id={$Page.id}\n理由：')"><img src="img/report.svg" height="2%" width="2%"/>举报</a>
+    </span>&nbsp;&nbsp;&nbsp;
+  </div>
+{/if}
+<h3><a href="user.php?uid={$Page.uid}">{$Page.uname}</a></h3>
+<div style="float:right;" class="linkbutton">
+  {if $IsMyPsg==1}
+    <a href="javascript:editpassage()">编辑文本</a>
+    <a href="javascript:editscript()">脚本编辑器</a>&nbsp;&nbsp;
+  {/if}
+</div>
+<div id="mid_box">
+{if $Page.path}
+<script>
+  window.midi_path="upload/{$Page.path}.mid";
+</script>
+<div id="midi_status"></div>
+<div id="midi_config_status"></div>
+<div id="midi_control" style="display:none;">
+  <a href="javascript:mp.play();">播放</a>
+  <a href="javascript:mp.stop();">停止</a>
+  <a href="upload/{$Page.path}.mid">下载</a>
+  <!--<a 
+    href="javascript:fonton();"
+    id="fonton"
+    style="display:none;"
+  >启动音源</a>
+  <a 
+    href="javascript:fontoff();"
+    id="fontoff"
+  >关闭音源</a>-->
+</div>
+{else}
+  <h2>owner没有上传音乐哦</h2>
+{/if}
+{if $MyUid==$Page.uid}
+  <br>
+  <input type="file" id="midi_file" name="midi_file">
+  <a href="javascript:uploadmidi()">上传</a>
+{/if}
+</div>
+<div id="passage_box">{$Page.cont}</div>
+<div id="passage_box_http"></div>
+<script>
+ready(function(){
+  var str=$("#passage_box").html();
+  var reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-|;)+)/g;
+  var fs=str.replace(reg, '<a href="$1$2">$1$2</a>');
+  $("#passage_box").hide();
+  $("#passage_box_http").html(fs);
+});
+</script>
+<div id="forks" class="p_box">
+  <a style="float:right;" href="javascript:closebox('#forks')">
+    <img src="img/close.svg"/>
+  </a>
+  <br>
+  <div id="esb" style="top:10%;width:100%;background:rgba(0,255,255,0.7);">
+    <div id="childrennodes_box">
+      <h4>已fork的用户：</h4>
+      <div id="childrenbox">
+        {foreach $Child as $P}
+          {if $P.id}
+            <div class='childrennodes'>
+              <h3>
+                <a href="/fork{$P.id}">{$P.uname}</a>
+                {$P.score}赞
+              </h3>
+            </div>
+          {/if}
+        {/foreach}
+      </div>
+      <a href="javascript:getChild()">更多</a><br>
+    </div>
+  </div>
+</div>
+{if $Page.path}
+<!-- shim -->
+<script src="/js/lua.js" type="text/javascript"></script>
+<script src="/js/midi.js" type="text/javascript"></script>
+<script src="/js/notation.js" type="text/javascript"></script>
+<script src="/js/midi-config.js" type="text/javascript"></script>
+<script>
+var mp;
+$("#midi_status").append("加载播放器……<br>");
+ready(function(){
+    $("#midi_status").append("准备播放<br>");
+    mp=new MidiPlayer(window.midi_path);
+    mp.play(decodeconfig);
+    $("#midi_control").show();
+    fontoff();
+});
+function fonton(){
+  window.useFont=true;
+  $('#fonton').hide();
+  $('#fontoff').show();
+}
+function fontoff(){
+  window.useFont=false;
+  $('#fontoff').hide();
+  $('#fonton').show();
+}
+</script>
+{/if}
+{include file="commun.html"}
+{include file="foot.html"}
